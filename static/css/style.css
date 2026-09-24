@@ -40,6 +40,8 @@ body {
     width: 100%;
 }
 
+
+
 .header {
     background: linear-gradient(135deg, #2f7de1, #38b6ff);
     color: #fff;
@@ -60,6 +62,8 @@ body {
     font-size: .85rem;
     opacity: .85;
 }
+
+
 
 main {
     flex: 1;
@@ -121,6 +125,8 @@ main {
     margin-top: 4px;
 }
 
+
+
 .btn {
     margin-top: 18px;
     background: var(--accent);
@@ -130,12 +136,40 @@ main {
     border-radius: 8px;
     cursor: pointer;
     font-size: 1rem;
+    font-family: inherit;
     transition: background .2s;
 }
 
 .btn:hover {
     background: var(--accent-hover);
 }
+
+.btn-danger {
+    background: #e14545;
+    margin-top: 0;
+    padding: 8px 16px;
+    font-size: .9rem;
+}
+
+.btn-danger:hover {
+    background: #b83030;
+}
+
+.btn-icon {
+    background: transparent;
+    border: none;
+    color: #e14545;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 6px;
+    transition: background .2s;
+}
+
+.btn-icon:hover {
+    background: rgba(225, 69, 69, .15);
+}
+
 
 .alert {
     background: #d9f2dd;
@@ -145,6 +179,97 @@ main {
     border-radius: 10px;
     margin-top: 24px;
 }
+
+
+
+.trips-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.trips-header h2 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: .85rem;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+}
+
+.empty {
+    opacity: .7;
+    font-style: italic;
+    padding: 8px 0;
+}
+
+.trips-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.trip {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    transition: transform .2s, box-shadow .2s;
+}
+
+.trip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .1);
+}
+
+.trip-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.trip-head h3 {
+    font-size: 1.05rem;
+    line-height: 1.3;
+}
+
+.trip-info {
+    list-style: none;
+    font-size: .9rem;
+    display: grid;
+    gap: 4px;
+}
+
+.trip-info span {
+    opacity: .7;
+    margin-right: 4px;
+}
+
+.trip-notes {
+    margin-top: 10px;
+    font-size: .9rem;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+    opacity: .9;
+}
+
+.trip-notes span {
+    opacity: .7;
+}
+
 
 .cards {
     display: grid;
@@ -189,6 +314,8 @@ main {
     color: var(--accent);
     font-weight: 700;
 }
+
+
 
 .footer {
     text-align: center;

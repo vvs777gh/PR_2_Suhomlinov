@@ -25,14 +25,6 @@
 
     <main class="container">
 
-        {% if saved_trip %}
-        <div class="alert">
-            ✅ {{ t.success }}
-            <strong>{{ saved_trip.name }}</strong> —
-            {{ saved_trip.country }}, {{ saved_trip.date }}.
-        </div>
-        {% endif %}
-
         <section class="card">
             <h2>{{ t.form_title }}</h2>
             <form method="post" class="trip-form">
@@ -50,6 +42,54 @@
                 </div>
                 <button type="submit" name="trip_submit" class="btn">{{ t.save_btn }}</button>
             </form>
+        </section>
+
+        <section class="card" id="trips">
+            <div class="trips-header">
+                <h2>{{ t.trips_title }}
+                    <span class="badge">{{ trips_count }}</span>
+                </h2>
+                {% if trips %}
+                <form method="post" action="{% url 'clear_trips' %}"
+                    onsubmit="return confirm('{{ t.confirm_clear }}');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">{{ t.clear_btn }}</button>
+                </form>
+                {% endif %}
+            </div>
+
+            {% if not trips %}
+            <p class="empty">{{ t.trips_empty }}</p>
+            {% else %}
+            <div class="trips-list">
+                {% for trip in trips %}
+                <article class="trip">
+                    <div class="trip-head">
+                        <h3>{{ trip.name }} → {{ trip.country }}</h3>
+                        <form method="post" action="{% url 'delete_trip' trip.id %}"
+                            onsubmit="return confirm('{{ t.confirm_delete }}');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-icon" title="{{ t.delete_btn }}">✕</button>
+                        </form>
+                    </div>
+                    <ul class="trip-info">
+                        <li><span>{{ t.date_label }}:</span> {{ trip.date }}</li>
+                        <li><span>{{ t.days_label }}:</span> {{ trip.days }} {{ t.days_short }}</li>
+                        <li><span>{{ t.transport_label }}:</span> {{ trip.transport }}</li>
+                        {% if trip.budget %}
+                        <li><span>{{ t.budget_short }}:</span> {{ trip.budget }} ₽</li>
+                        {% endif %}
+                        <li><span>{{ t.created_label }}:</span> {{ trip.created }}</li>
+                    </ul>
+                    {% if trip.notes %}
+                    <p class="trip-notes">
+                        <span>{{ t.notes_short }}:</span> {{ trip.notes }}
+                    </p>
+                    {% endif %}
+                </article>
+                {% endfor %}
+            </div>
+            {% endif %}
         </section>
 
         <section class="card">
@@ -73,9 +113,10 @@
             <div class="cards">
                 {% for c in countries %}
                 <div class="country-card">
-                    <img src="{% static c.image %}" alt="{{ c.name }}">
-                    <h3>{{ c.name }}</h3>
-                    <p>{{ c.description }}</p>
+                    <img src="{% static c.image %}"
+                        alt="{% if lang == 'en' %}{{ c.name_en }}{% else %}{{ c.name }}{% endif %}">
+                    <h3>{% if lang == 'en' %}{{ c.name_en }}{% else %}{{ c.name }}{% endif %}</h3>
+                    <p>{% if lang == 'en' %}{{ c.description_en }}{% else %}{{ c.description }}{% endif %}</p>
                     <p class="price">{{ t.from_price }} {{ c.price }} ₽</p>
                 </div>
                 {% endfor %}

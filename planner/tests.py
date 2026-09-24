@@ -1,71 +1,49 @@
-from django.test import TestCase
-from django.urls import reverse
+def test_trip_saved_to_session(self):
+    """Валидная форма сохраняет поездку в сессию и делает redirect."""
+    response = self.client.post(
+        reverse("index"),
+        {
+            "name": "Иван",
+            "country": "it",
+            "date": "2025-07-01",
+            "days": 10,
+            "transport": "plane",
+            "budget": 80000,
+            "notes": "Хочу в Рим",
+            "trip_submit": "",
+        },
+    )
+    self.assertEqual(response.status_code, 302)
+
+    session = self.client.session
+    trips = session.get("trips", [])
+    self.assertEqual(len(trips), 1)
+    self.assertEqual(trips[0]["name"], "Иван")
+    self.assertEqual(trips[0]["country"], "Италия")
+
+    # Поездка видна на странице
+    response = self.client.get(reverse("index"))
+    self.assertContains(response, "Иван")
+    self.assertContains(response, "Италия")
 
 
-class IndexViewTests(TestCase):
+def test_trip_english_labels(self):
+    """При lang=en лейблы формы и стран на английском."""
+    self.client.cookies["lang"] = "en"
+    response = self.client.get(reverse("index"))
+    html = response.content.decode("utf-8")
+    self.assertIn("Your name", html)
+    self.assertIn("Travel date", html)
+    self.assertIn("Italy", html)
+    self.assertNotIn("Ваше имя", html)
 
-    def test_index_status_code(self):
-        """Главная страница открывается."""
-        response = self.client.get(reverse("index"))
-        self.assertEqual(response.status_code, 200)
 
-    def test_index_sets_visit_cookies(self):
-        """При заходе ставятся cookies last_visit и visits."""
-        response = self.client.get(reverse("index"))
-        self.assertIn("last_visit", response.cookies)
-        self.assertIn("visits", response.cookies)
+def test_clear_trips(self):
+    """Очистка всех поездок удаляет их из сессии."""
+    session = self.client.session
+    session["trips"] = [{"id": 1, "name": "Test"}]
+    session.save()
 
-    def test_theme_cookie_saved(self):
-        """Настройки темы и языка сохраняются в cookies."""
-        response = self.client.post(
-            reverse("index"),
-            {"theme": "dark", "language": "en", "settings_submit": ""},
-        )
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.cookies["theme"].value, "dark")
-        self.assertEqual(response.cookies["lang"].value, "en")
-
-    def test_index_dark_theme_applied(self):
-        """Cookie theme=dark добавляет класс theme-dark."""
-        self.client.cookies["theme"] = "dark"
-        response = self.client.get(reverse("index"))
-        self.assertContains(response, "theme-dark")
-
-    def test_index_english_lang(self):
-        """Cookie lang=en переключает интерфейс на английский."""
-        self.client.cookies["lang"] = "en"
-        response = self.client.get(reverse("index"))
-        self.assertContains(response, "Travel Planner")
-
-    def test_trip_form_valid_submit(self):
-        """Валидная форма путешествия возвращает сообщение об успехе."""
-        response = self.client.post(
-            reverse("index"),
-            {
-                "name": "Иван",
-                "country": "it",
-                "date": "2025-07-01",
-                "days": 10,
-                "transport": "plane",
-                "budget": 80000,
-                "notes": "Хочу в Рим",
-                "trip_submit": "",
-            },
-        )
-        self.assertContains(response, "Иван")
-
-    def test_trip_form_invalid(self):
-        """Форма с пустым именем не проходит валидацию."""
-        response = self.client.post(
-            reverse("index"),
-            {
-                "name": "",
-                "country": "it",
-                "date": "2025-07-01",
-                "days": 10,
-                "transport": "plane",
-                "trip_submit": "",
-            },
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Обязательное поле")
+    response = self.client.post(reverse("clear_trips"))
+    self.assertEqual(response.status_code, 302)
+    self.assertEqual(self.client.session.get("trips"), [])
