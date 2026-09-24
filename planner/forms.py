@@ -38,7 +38,6 @@ class TripForm(forms.Form):
         self.fields["budget"].label = L["budget"]
         self.fields["notes"].label = L["notes"]
 
-        # Локализуем варианты в select
         if lang == "en":
             self.fields["country"].choices = [
                 (c["code"], c["name_en"]) for c in COUNTRIES
@@ -55,7 +54,6 @@ class TripForm(forms.Form):
             ]
             self.fields["transport"].choices = TRANSPORT_CHOICES
 
-        # Placeholder
         placeholders = {
             "ru": "Иван Иванов",
             "en": "John Smith",

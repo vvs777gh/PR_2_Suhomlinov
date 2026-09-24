@@ -1,5 +1,4 @@
 def test_trip_saved_to_session(self):
-    """Валидная форма сохраняет поездку в сессию и делает redirect."""
     response = self.client.post(
         reverse("index"),
         {
@@ -28,7 +27,6 @@ def test_trip_saved_to_session(self):
 
 
 def test_trip_english_labels(self):
-    """При lang=en лейблы формы и стран на английском."""
     self.client.cookies["lang"] = "en"
     response = self.client.get(reverse("index"))
     html = response.content.decode("utf-8")
@@ -39,7 +37,6 @@ def test_trip_english_labels(self):
 
 
 def test_clear_trips(self):
-    """Очистка всех поездок удаляет их из сессии."""
     session = self.client.session
     session["trips"] = [{"id": 1, "name": "Test"}]
     session.save()

@@ -8,7 +8,6 @@ from .forms import SettingsForm, TripForm
 
 
 def _get_context(request):
-    """Формирует базовый контекст из cookies и сессии."""
     lang = request.COOKIES.get("lang", "ru")
     if lang not in TRANSLATIONS:
         lang = "ru"
@@ -37,7 +36,6 @@ def _get_context(request):
 
 
 def _update_visit_cookies(request, response):
-    """Обновляет cookie последнего визита и счётчик посещений."""
     now = datetime.now().strftime("%d.%m.%Y %H:%M")
     prev = request.COOKIES.get("last_visit", "")
     visits = int(request.COOKIES.get("visits", 0)) + 1
@@ -49,7 +47,6 @@ def _update_visit_cookies(request, response):
 
 
 def _country_label(code, lang):
-    """Возвращает название страны по коду и языку."""
     for c in COUNTRIES:
         if c["code"] == code:
             return c["name_en"] if lang == "en" else c["name"]
@@ -57,7 +54,6 @@ def _country_label(code, lang):
 
 
 def _transport_label(code, lang):
-    """Возвращает название транспорта по коду и языку."""
     labels_ru = dict(TRANSPORT_CHOICES)
     labels_en = {"plane": "Plane", "train": "Train",
                  "car": "Car", "bus": "Bus"}
@@ -67,14 +63,12 @@ def _transport_label(code, lang):
 def index(request):
     ctx = _get_context(request)
 
-    # Лейблы формы на нужном языке
     form = TripForm(lang=ctx["lang"])
     settings_form = SettingsForm(
         initial={"theme": ctx["theme"], "language": ctx["lang"]},
     )
 
     if request.method == "POST":
-        # --- Сохранение путешествия ---
         if "trip_submit" in request.POST:
             form = TripForm(request.POST, lang=ctx["lang"])
             if form.is_valid():
@@ -101,7 +95,6 @@ def index(request):
                 request.session.modified = True
                 return redirect(f"{reverse('index')}#trips")
 
-        # --- Сохранение настроек ---
         elif "settings_submit" in request.POST:
             sform = SettingsForm(request.POST)
             if sform.is_valid():
@@ -127,7 +120,6 @@ def index(request):
 
 
 def delete_trip(request, trip_id):
-    """Удаляет одну поездку по её id."""
     if request.method == "POST":
         trips = request.session.get("trips", [])
         trips = [t for t in trips if t["id"] != trip_id]
@@ -137,7 +129,6 @@ def delete_trip(request, trip_id):
 
 
 def clear_trips(request):
-    """Удаляет все сохранённые поездки."""
     if request.method == "POST":
         request.session["trips"] = []
         request.session.modified = True
